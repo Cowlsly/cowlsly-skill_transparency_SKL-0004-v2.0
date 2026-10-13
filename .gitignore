@@ -9,3 +9,8 @@ build/
 *.qa-roundtrip.png
 qa-output/
 .DS_Store
+
+# Added by repo hygiene sweep
+.env
+.env.*
+!.env.example
