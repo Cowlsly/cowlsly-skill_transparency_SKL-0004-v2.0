@@ -1,9 +1,7 @@
 name: transparency-assurance-ci
 
 on:
-  push:
-    branches: [main, "build/**"]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
