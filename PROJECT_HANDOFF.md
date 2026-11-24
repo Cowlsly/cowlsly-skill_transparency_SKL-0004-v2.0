@@ -1,16 +1,19 @@
 # PROJECT HANDOFF — Marla Transparency Assurance SKL-0004 v2
 
 **Prepared:** 27 August 2026  
-**Project:** `marla-skill_transparency_SKL-0004-v2.0`  
-**Status:** Active development, pre-release alpha foundation  
+**Updated:** 25 November 2026 (Australia/Perth)  
+**Project:** `cowlsly-skill_transparency_SKL-0004-v2.0`  
+**Status:** Active development, pre-release alpha (`2.0.0a3`)  
 **Primary goal:** Turn transparency handling into a target-aware, verifiable, repair-before-regeneration assurance system for Marla-AI and downstream repo workflows.
+
+**25 November 2026 update.** The GitHub repository is now `Cowlsly/cowlsly-skill_transparency_SKL-0004-v2.0` (https://github.com/Cowlsly/cowlsly-skill_transparency_SKL-0004-v2.0). The v2 foundation from PR #1 is on `main`. P0 edge QA, unavailable-bytes capability states, and direct failure-mode regression tests landed on branch `finisher/p0-edge-qa-and-capability-tests`. Semantic visual QA, the 30–50 fixture corpus, and the empirical false-acceptance benchmark remain open. Do not merge to `main` without review, and do not promote v2 as production-ready yet.
 
 ---
 
 ## 1. Primary GitHub Repository
 
-**Repository:** `Cowlsly/marla-skill_transparency_SKL-0004-v2.0`  
-**GitHub URL:** https://github.com/Cowlsly/marla-skill_transparency_SKL-0004-v2.0  
+**Repository:** `Cowlsly/cowlsly-skill_transparency_SKL-0004-v2.0`  
+**GitHub URL:** https://github.com/Cowlsly/cowlsly-skill_transparency_SKL-0004-v2.0  
 **Default branch:** `main`  
 **Working branch:** `build/transparency-assurance-v2`
 
@@ -136,10 +139,12 @@ Completed:
 - [x] Target profiles for Google Play, Android adaptive, PWA maskable and Apple layered icons
 - [x] Formal QA attestation schema and CLI support
 
-Still required:
-- [ ] Mode-aware edge QA that distinguishes white/grey halos, chroma spill, legitimate shadows, glow, hair/fur, glass/smoke/translucency
-- [ ] Expand regression coverage so every deterministic failure mode is directly asserted
-- [ ] Add capability-state tests for environments where final output bytes are unavailable
+Completed in `2.0.0a3`:
+- [x] Mode-aware edge QA that distinguishes white/grey halos, chroma spill, legitimate shadows, glow, hair/fur, glass/smoke/translucency
+- [x] Expand regression coverage so every deterministic failure mode is directly asserted
+- [x] Add capability-state tests for environments where final output bytes are unavailable
+
+Still required before production promotion: semantic visual QA, expanded fixture corpus, and a measured false-acceptance benchmark.
 
 Do not promote to production-ready v2 until these are solid.
 
