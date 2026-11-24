@@ -9,7 +9,7 @@ from PIL import Image
 from .composite import DEFAULT_BACKGROUNDS, make_contact_sheet
 from .profiles import PROFILES
 from .repair import boundary_connected_flat_repair
-from .validator import inspect_asset, write_report
+from .validator import inspect_asset, report_without_asset_bytes, write_report
 
 
 def main() -> None:
@@ -34,6 +34,15 @@ def main() -> None:
     repair.add_argument("asset")
     repair.add_argument("--output", required=True)
     repair.add_argument("--tolerance", type=float, default=18.0)
+
+    unavailable = sub.add_parser(
+        "unavailable",
+        help="Emit a truthful report when final asset bytes cannot be inspected",
+    )
+    unavailable.add_argument("--visual-only", action="store_true", help="Only a visual preview was available")
+    unavailable.add_argument("--profile", default="repo-generic", choices=sorted(PROFILES))
+    unavailable.add_argument("--json", dest="json_path")
+    unavailable.add_argument("--source-path", default=None)
 
     profiles = sub.add_parser("profiles", help="List built-in target profiles")
 
@@ -62,6 +71,17 @@ def main() -> None:
         result = boundary_connected_flat_repair(args.asset, args.output, args.tolerance)
         print(json.dumps(result, indent=2, sort_keys=True))
         return
+
+    if args.command == "unavailable":
+        report = report_without_asset_bytes(
+            visual_only=args.visual_only,
+            profile_name=args.profile,
+            source_path=args.source_path,
+        )
+        if args.json_path:
+            write_report(report, args.json_path)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        raise SystemExit(2)
 
     if args.command == "profiles":
         print(json.dumps({name: {"transparency": p.transparency.value, "width": p.width, "height": p.height, "max_bytes": p.max_bytes, "notes": p.notes} for name, p in sorted(PROFILES.items())}, indent=2, sort_keys=True))

@@ -11,6 +11,7 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 
 from .checkerboard import detect_baked_checkerboard
+from .edge_quality import evaluate_edge_quality
 from .profiles import TransparencyPolicy, get_profile
 
 MAX_PIXELS = 50_000_000
@@ -37,7 +38,7 @@ def inspect_asset(path: str | Path, profile_name: str = "repo-generic") -> dict[
     path = Path(path)
     profile = get_profile(profile_name)
     report: dict[str, Any] = {
-        "validator_version": "2.0.0a2",
+        "validator_version": "2.0.0a3",
         "asset_profile": profile_name,
         "profile": asdict(profile),
         "source_path": str(path),
@@ -48,7 +49,7 @@ def inspect_asset(path: str | Path, profile_name: str = "repo-generic") -> dict[
 
     if not path.exists() or not path.is_file():
         report["gates"]["FILE_IDENTITY"] = _state(False, "File does not exist or is not a regular file")
-        report["capability_state"] = "FAILED_QA_REGENERATE"
+        report["capability_state"] = "NATIVE_ALPHA_REQUESTED_FILE_NOT_ACCESSIBLE"
         report["target_compliant"] = False
         return report
 
@@ -164,7 +165,14 @@ def inspect_asset(path: str | Path, profile_name: str = "repo-generic") -> dict[
         checker.reason,
         {"score": checker.score, "tile_size": checker.tile_size, "visible_fraction": checker.visible_fraction},
     )
-    report["gates"]["EDGE_QUALITY"] = _state(None, "Requires color-managed composite and semantic visual QA")
+    forbidden = profile.transparency == TransparencyPolicy.FORBIDDEN
+    edge = evaluate_edge_quality(im, transparency_forbidden=forbidden)
+    if edge.status == "NOT_APPLICABLE":
+        report["gates"]["EDGE_QUALITY"] = _not_applicable(edge.reason, edge.metrics)
+    elif edge.status == "UNVERIFIED":
+        report["gates"]["EDGE_QUALITY"] = _state(None, edge.reason, edge.metrics)
+    else:
+        report["gates"]["EDGE_QUALITY"] = _state(edge.status == "PASS", edge.reason, edge.metrics)
     report["gates"]["SEMANTIC_TRANSPARENCY"] = _state(None, "Requires semantic visual QA")
 
     width_ok = profile.width is None or im.width == profile.width
@@ -191,7 +199,7 @@ def inspect_asset(path: str | Path, profile_name: str = "repo-generic") -> dict[
     hard_fail = any(
         gate["status"] == "FAIL"
         for name, gate in report["gates"].items()
-        if name not in {"EDGE_QUALITY", "SEMANTIC_TRANSPARENCY"}
+        if name not in {"SEMANTIC_TRANSPARENCY"}
     )
     report["target_compliant"] = bool(target_ok and not hard_fail)
     if report["target_compliant"]:
@@ -201,6 +209,52 @@ def inspect_asset(path: str | Path, profile_name: str = "repo-generic") -> dict[
     else:
         report["capability_state"] = "FAILED_QA_REPAIRABLE"
     return report
+
+
+UNVERIFIED_WHEN_BYTES_UNAVAILABLE = (
+    "FILE_IDENTITY",
+    "TRANSPARENCY_CAPABILITY",
+    "MEANINGFUL_ALPHA_USAGE",
+    "BORDER_EXPECTATION",
+    "ALPHA_TOPOLOGY",
+    "FAKE_CHECKERBOARD",
+    "EDGE_QUALITY",
+    "SEMANTIC_TRANSPARENCY",
+    "ROUND_TRIP",
+    "TARGET_CONTRACT",
+)
+
+
+def report_without_asset_bytes(
+    *,
+    visual_only: bool = False,
+    profile_name: str = "repo-generic",
+    source_path: str | None = None,
+    reason: str | None = None,
+) -> dict[str, Any]:
+    """Tell the truth when final output bytes cannot be inspected.
+
+    Never returns a VERIFIED_* capability state or target_compliant=True.
+    """
+    profile = get_profile(profile_name)
+    if visual_only:
+        state = "VISUAL_ONLY_NOT_FILE_VERIFIED"
+        default_reason = "Only a visual preview was available; file bytes were not inspected"
+    else:
+        state = "NATIVE_ALPHA_REQUESTED_FILE_NOT_ACCESSIBLE"
+        default_reason = "Native transparency was requested but final output bytes were not accessible"
+    message = reason or default_reason
+    return {
+        "validator_version": "2.0.0a3",
+        "asset_profile": profile_name,
+        "profile": asdict(profile),
+        "source_path": source_path,
+        "gates": {name: _state(None, message) for name in UNVERIFIED_WHEN_BYTES_UNAVAILABLE},
+        "warnings": [message],
+        "repair_history": [],
+        "capability_state": state,
+        "target_compliant": False,
+    }
 
 
 def write_report(report: dict[str, Any], output: str | Path) -> None:

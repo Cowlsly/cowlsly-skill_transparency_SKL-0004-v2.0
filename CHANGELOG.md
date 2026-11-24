@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.0-alpha.3
+
+### Added
+- Mode-aware `EDGE_QUALITY` gate that distinguishes white/grey matte halos and chroma spill from legitimate contact shadows, glow, hair/fur, and glass/smoke translucency.
+- Direct positive and negative regression fixtures for each of those edge modes.
+- `report_without_asset_bytes()` and a `transparency unavailable` CLI command for environments where final output bytes cannot be inspected.
+- Direct tests for missing files, visual-only previews, corrupt/truncated images, decompression bombs, nearly-empty alpha, and opaque-border contract failures.
+
+### Changed
+- `EDGE_QUALITY` is now an active hard gate. A halo or chroma-spill failure makes the asset non-compliant instead of leaving the gate unverified.
+- Missing files now report `NATIVE_ALPHA_REQUESTED_FILE_NOT_ACCESSIBLE` rather than `FAILED_QA_REGENERATE`, so the validator never claims a verified or regenerate-after-QA state when bytes were not inspected.
+- Package and validator version set to `2.0.0a3`.
+
+### Still experimental
+- Semantic visual grading.
+- APNG/frame-aware validation.
+- Expanded 30–50 fixture corpus and an empirical false-acceptance benchmark.
+- PNG source-representation reporting, EXIF/XMP policy, and dependency lockfile (P1).
+
 ## 2.0.0-alpha.2
 
 ### Added
