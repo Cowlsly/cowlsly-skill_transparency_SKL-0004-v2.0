@@ -6,6 +6,8 @@
 **Status:** Active development, pre-release alpha (`2.0.0a3`)  
 **Primary goal:** Turn transparency handling into a target-aware, verifiable, repair-before-regeneration assurance system for Marla-AI and downstream repo workflows.
 
+**25 November 2026, 11:11 AM AWST (manual finisher run).** Stacked branch `finisher/p1-fixture-corpus-and-lockfile` on PR #3 adds a 34-case deterministic fixture corpus and pinned `requirements*.lock` files. This does not complete the 30–50 *held-out* challenge suite or the false-acceptance benchmark; it locks current gate behaviour so later calibration cannot silently regress. Independent of, and stacked on, `finisher/p0-edge-qa-and-capability-tests`.
+
 **25 November 2026 update.** The GitHub repository is now `Cowlsly/cowlsly-skill_transparency_SKL-0004-v2.0` (https://github.com/Cowlsly/cowlsly-skill_transparency_SKL-0004-v2.0). The v2 foundation from PR #1 is on `main`. P0 edge QA, unavailable-bytes capability states, and direct failure-mode regression tests landed on branch `finisher/p0-edge-qa-and-capability-tests`. Semantic visual QA, the 30–50 fixture corpus, and the empirical false-acceptance benchmark remain open. Do not merge to `main` without review, and do not promote v2 as production-ready yet.
 
 ---
@@ -152,7 +154,7 @@ Do not promote to production-ready v2 until these are solid.
 
 ## 6. P1 Roadmap
 
-- Expand deterministic fixture corpus to ~30–50 cases
+- [x] Expand deterministic fixture corpus to ~30–50 cases (34 synthetic cases in `tests/fixtures/corpus.py`; not yet a held-out/generated challenge suite)
 - PNG source representation reporting: bit depth, explicit alpha, palette transparency, `tRNS`, color profile/gamma metadata, APNG frames
 - Animation-aware alpha validation
 - EXIF/XMP sanitization policy
@@ -160,7 +162,7 @@ Do not promote to production-ready v2 until these are solid.
 - corrupt/truncated image tests
 - decompression-bomb guard tests
 - `EDIT_PRESERVE_ALPHA` before/after alpha-diff validation
-- dependency pinning / lockfile
+- [x] dependency pinning / lockfile (`requirements.lock`, `requirements-dev.lock`)
 - release cleanup and reproducibility
 
 ---

@@ -19,7 +19,7 @@ Transparency is a **verifiable output contract**, not merely the phrase “trans
 
 The most important quality metric is **false acceptance rate**: a broken asset should almost never be declared complete.
 
-## Current v2 status (`2.0.0a3`)
+## Current v2 status (`2.0.0a4`)
 
 - Target-aware profile system.
 - File-level PNG/alpha validation.
@@ -27,7 +27,7 @@ The most important quality metric is **false acceptance rate**: a broken asset s
 - Honest capability-state reporting, including when final bytes are not accessible (`transparency unavailable`).
 - Boundary-connected flat-background repair helper.
 - Machine-readable QA attestation.
-- Pytest regression suite (29 tests).
+- Pytest regression suite, including a 34-case deterministic fixture corpus.
 - GitHub Actions CI.
 - Master behavioral specification in `SKILL.md`.
 
@@ -37,12 +37,15 @@ This is still a pre-release alpha. Do not promote v2 as production-ready until t
 ## Quick start
 
 ```bash
-python -m pip install -e .[dev]
+python -m pip install -r requirements-dev.lock
+python -m pip install -e . --no-deps
 transparency validate path/to/asset.png --profile repo-generic --json qa.json
 # When final file bytes cannot be inspected:
 transparency unavailable --visual-only --json qa.json
 pytest
 ```
+
+Refresh pins with `uv pip compile pyproject.toml --python-version 3.12 -o requirements.lock` and the same command plus `--extra dev -o requirements-dev.lock`.
 
 ## Capability states
 

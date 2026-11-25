@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0-alpha.4
+
+### Added
+- Deterministic 34-case synthetic fixture corpus (`tests/fixtures/corpus.py`) with parametrized regression coverage for clean cutouts, known failure modes, legitimate edge structure, and built-in target profiles.
+- Pinned dependency lockfiles: `requirements.lock` and `requirements-dev.lock`, compiled with `uv pip compile` for Python 3.12. CI now installs from the dev lockfile.
+
+### Still experimental
+- Semantic visual grading.
+- APNG/frame-aware validation and richer PNG source-representation reporting.
+- A measured false-acceptance benchmark on a held-out/generated challenge suite.
+- EXIF/XMP policy and animation-aware alpha (remaining P1).
+
 ## 2.0.0-alpha.3
 
 ### Added
